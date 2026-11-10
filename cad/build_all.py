@@ -62,9 +62,9 @@ def export_3mf_bundle(parts_dict: dict[str, trimesh.Trimesh], filepath: str) -> 
     R_pos90_y = trimesh.transformations.rotation_matrix(np.pi / 2.0, [0, 1, 0])
     for name, m in parts_dict.items():
         mc = m.copy()
-        if name.startswith("CaseU1"):
+        if name.startswith("CaseU1") or name.startswith("CaseM1"):
             mc.apply_transform(R_pos90_x)
-        elif name.startswith("CaseM1") or name.startswith("CaseL1"):
+        elif name.startswith("CaseL1"):
             mc.apply_transform(R_neg90_x)
         elif name.startswith("CaseS1"):
             # Stand CaseS1 vertically on its completely flat X = 96.50 mm right end face (Z_print = 0)

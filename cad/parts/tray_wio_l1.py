@@ -49,15 +49,17 @@ def build_case_m1_wio_l1() -> trimesh.Trimesh:
 
     # 2. Full Bottom Battery Plug (#2) + Grove I2C Plug & Wire Bend Bay (X = 7.50..46.80, Z_M1 = 49.00..69.50)
     # Cuts completely through the backplane (Y_M1 = -0.50..5.50) across both the bottom-left BAT JST socket (#2)
-    # and the bottom-right Grove I2C socket so the battery plug and Grove plug both have full clearance!
+    # and the bottom-right Grove I2C socket so the battery plug and Grove plug both have full clearance,
+    # and removes the thin standing wall at X = 35.65..59.65, Z_M1 = 68.00..75.00!
     bottom_plugs_through = box_from_bounds(7.50, 46.80, -0.50, 5.50, 49.00, 69.50)
-    grove_wire_bay = box_from_bounds(7.50, 89.00, 0.80, 5.50, 59.20, 69.50)
+    bottom_wall_clear = box_from_bounds(35.65, 59.65, 1.00, 5.50, 68.00, 75.50)
+    grove_wire_bay = box_from_bounds(7.50, 89.00, 0.80, 5.50, 59.20, 71.20)
 
     # 3. Right-Side Antenna Cord & Connector Passage (#3: X = 44.50..88.00, Z_M1 = 12.80..68.00)
     # Cuts completely through the right side of the PCB (X = 44.50..85.00, Z_M1 = 12.80..53.20, Y_M1 = -0.50..5.50)
     # and opens the top coax drop chute (X = 52.00..85.00, Z_M1 = 0.00..16.00) so the antenna cord passes freely!
     right_coax_through = box_from_bounds(44.50, 85.00, -0.50, 5.50, 12.80, 53.20)
-    rf_bay = box_from_bounds(51.50, 89.00, 0.80, 5.50, 12.80, 69.50)
+    rf_bay = box_from_bounds(50.00, 89.00, 0.80, 5.50, 12.80, 69.50)
     rf_top_chute = box_from_bounds(52.00, 85.00, 0.80, 5.50, -0.50, 16.00)
     rf_top_slot_through = box_from_bounds(53.00, 82.00, -0.50, 5.50, 2.00, 16.00)
 
@@ -76,6 +78,7 @@ def build_case_m1_wio_l1() -> trimesh.Trimesh:
             wio_center_window,
             left_solder_pin_window,
             bottom_plugs_through,
+            bottom_wall_clear,
             grove_wire_bay,
             right_coax_through,
             rf_bay,

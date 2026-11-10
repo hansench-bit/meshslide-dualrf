@@ -69,8 +69,8 @@ def _prepare_stretched_m1_blank(height_expansion: float = HEIGHT_EXPANSION) -> t
     coax_front_chute_left = box_from_bounds(42.5, 50.5, 2.0, 5.7, 6.0, 15.5)
     coax_front_chute_right = box_from_bounds(50.5, 78.5, 1.2, 5.7, 6.0, 15.5)
 
-    # Re-clear the 8-pin pogo solder access window at the bottom center (X=36.0..60.5, Z=28.0+ext..32.5+ext)
-    pogo_wire_bay = box_from_bounds(36.0, 60.5, 1.0, 5.5, 28.0 + height_expansion, 32.5 + height_expansion)
+    # Re-clear the 8-pin pogo solder access window at the bottom center (X=36.0..60.5, Z=28.0+ext..35.0+ext)
+    pogo_wire_bay = box_from_bounds(36.0, 60.5, 1.0, 5.5, 28.0 + height_expansion, 35.0 + height_expansion)
 
     return trimesh.boolean.difference(
         [body, trimesh.boolean.union([coax_top_opening, coax_front_chute_left, coax_front_chute_right, pogo_wire_bay], engine="manifold")],
