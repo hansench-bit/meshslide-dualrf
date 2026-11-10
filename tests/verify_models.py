@@ -35,11 +35,11 @@ import numpy as np
 
 def run_verification() -> None:
     expected_parts = {
-        "CaseS1_DualRF": ("Wio_Tracker_L1", (96.50, 18.00, 27.00)),
-        "CaseS1_DualRF_BoltOn": ("Wio_Tracker_L1", (96.50, 26.80, 28.20)),
-        "CaseS1_DualRF_Heatset": ("Wio_Tracker_L1", (96.50, 26.80, 28.20)),
-        "CaseL1_Deep": ("RAK_WisBlock", (96.50, 10.00, 45.00)),
-        "CaseL1_Deep_WioL1": ("Wio_Tracker_L1", (96.50, 10.00, 73.00)),
+        "CaseS1_DualRF": ("Wio_Tracker_L1", (96.50, 18.00, 31.00)),
+        "CaseS1_DualRF_BoltOn": ("Wio_Tracker_L1", (96.50, 26.80, 32.00)),
+        "CaseS1_DualRF_Heatset": ("Wio_Tracker_L1", (96.50, 26.80, 32.00)),
+        "CaseL1_Deep": ("RAK_WisBlock", (96.50, 12.60, 45.00)),
+        "CaseL1_Deep_WioL1": ("Wio_Tracker_L1", (96.50, 12.60, 73.00)),
         "CaseR1": ("Wio_Tracker_L1", (96.50, 18.00, 6.00)),
         "CaseSlide": ("Wio_Tracker_L1", (86.00, 10.00, 8.10)),
         "CaseButton": ("RAK_WisBlock", (5.00, 4.22, 7.00)),
@@ -121,15 +121,15 @@ def run_verification() -> None:
     print("\n=== 4. Checking Virtual Hardware Fit (N-Type, SMA, RAK19007, Wio L1, 103450 LiPo) ===")
     # 4a. Virtual Outside-Mount 4-Bolt Square-Flange N-Type Female (25x25mm top flange + Ø10.0mm rear barrel + 4x M3 bolts + 4x Captive M3 Hex Nuts)
     from cad.config import N_TYPE_BOLT_GRID, hex_prism_z
-    nt_top_flange = box_from_bounds(N_TYPE_X - 12.50, N_TYPE_X + 12.50, N_TYPE_Y - 12.50, N_TYPE_Y + 12.50, -9.50, -7.22)
-    nt_rear_barrel = cylinder_z(N_TYPE_X, N_TYPE_Y, -7.22, 5.0, radius=10.0 / 2.0)
+    nt_top_flange = box_from_bounds(N_TYPE_X - 12.50, N_TYPE_X + 12.50, N_TYPE_Y - 12.50, N_TYPE_Y + 12.50, -13.50, -11.02)
+    nt_rear_barrel = cylinder_z(N_TYPE_X, N_TYPE_Y, -11.02, 5.0, radius=10.0 / 2.0)
     m3_hw_parts = [nt_top_flange, nt_rear_barrel]
     for sx in [-1.0, 1.0]:
         for sy in [-1.0, 1.0]:
             bx = N_TYPE_X + sx * (N_TYPE_BOLT_GRID / 2.0)
             by = N_TYPE_Y + sy * (N_TYPE_BOLT_GRID / 2.0)
-            m3_hw_parts.append(cylinder_z(bx, by, -9.50, -1.50, radius=3.0 / 2.0))
-            m3_hw_parts.append(hex_prism_z(bx, by, -4.15, -1.75, across_flats=5.50))
+            m3_hw_parts.append(cylinder_z(bx, by, -13.50, -5.00, radius=3.0 / 2.0))
+            m3_hw_parts.append(hex_prism_z(bx, by, -7.95, -5.55, across_flats=5.50))
     nt_hw = trimesh.boolean.union(m3_hw_parts, engine="manifold")
     nt_col = trimesh.boolean.intersection([meshes["CaseS1_DualRF_BoltOn"], nt_hw], engine="manifold")
     assert nt_col.is_empty or nt_col.volume < 0.01, f"Outside-Mount N-Type + M3 Captive Nuts collision: {nt_col.volume}"
@@ -141,8 +141,8 @@ def run_verification() -> None:
         for sy in [-1.0, 1.0]:
             bx = N_TYPE_X + sx * (N_TYPE_BOLT_GRID / 2.0)
             by = N_TYPE_Y + sy * (N_TYPE_BOLT_GRID / 2.0)
-            m3_hs_parts.append(cylinder_z(bx, by, -7.20, -2.25, radius=3.95 / 2.0))
-            m3_hs_parts.append(cylinder_z(bx, by, -9.50, -1.25, radius=3.00 / 2.0))
+            m3_hs_parts.append(cylinder_z(bx, by, -11.00, -6.05, radius=3.95 / 2.0))
+            m3_hs_parts.append(cylinder_z(bx, by, -13.50, -5.05, radius=3.00 / 2.0))
     nt_hs_hw = trimesh.boolean.union(m3_hs_parts, engine="manifold")
     nt_hs_col = trimesh.boolean.intersection([meshes["CaseS1_DualRF_Heatset"], nt_hs_hw], engine="manifold")
     assert nt_hs_col.is_empty or nt_hs_col.volume < 0.01, f"Outside-Mount N-Type + M3 Heatset Inserts collision: {nt_hs_col.volume}"

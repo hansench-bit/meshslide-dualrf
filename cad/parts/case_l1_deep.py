@@ -33,13 +33,11 @@ def build_case_l1_deep(with_rokland_switch: bool = True, height_expansion: float
     # 1. Stretch vertically by +height_expansion at Z_L1 = 22.0mm (preserving top CaseS1 & bottom CaseR1 interfaces)
     stretched_l1 = stretch_mesh_z(orig_l1, split_z=STRETCH_SPLIT_Z_L1, delta_z=height_expansion)
 
-    # 2. Add +4.0mm outward rear battery shell expansion (Y = -4.0 to +2.0)
-    # Note: X in [0.0, 85.95] matches the original battery housing span on CaseL1.
-    # Use a 45-degree chamfered transition from Y=0.0 at Z=3.2..(28.6+ext) to Y=-4.0 at Z=6.2..(25.6+ext)
+    # 2. Add +6.6mm outward rear battery shell expansion (Y = -6.6 to +2.0)
     x0, x1 = 0.0, 85.95
     y_in = 2.0
     y_base = 0.0
-    y_ext = -BATTERY_EXTRA_DEPTH  # -4.0 mm
+    y_ext = -BATTERY_EXTRA_DEPTH  # -6.6 mm
     z_top_0, z_top_1 = 3.2, 6.2
     z_bot_1, z_bot_0 = 25.6 + height_expansion, 28.6 + height_expansion
 
@@ -48,17 +46,17 @@ def build_case_l1_deep(with_rokland_switch: bool = True, height_expansion: float
         [x0, y_in, z_top_0], [x1, y_in, z_top_0], [x1, y_in, z_bot_0], [x0, y_in, z_bot_0],
         # Base rectangle at Y = 0.0
         [x0, y_base, z_top_0], [x1, y_base, z_top_0], [x1, y_base, z_bot_0], [x0, y_base, z_bot_0],
-        # Extended back plate at Y = -4.0 (chamfered in Z and right X edge)
+        # Extended back plate at Y = -6.6 (chamfered in Z and right X edge)
         [x0, y_ext, z_top_1], [x1 - 2.0, y_ext, z_top_1], [x1 - 2.0, y_ext, z_bot_1], [x0, y_ext, z_bot_1],
     ], dtype=float)
     outer_bump = trimesh.convex.convex_hull(verts_outer)
 
     body = trimesh.boolean.union([stretched_l1, outer_bump], engine="manifold")
 
-    # 3. Carve expanded internal battery bay (82 x 34 x 10 mm on RAK; 82 x 52 x 10 mm on Wio L1)
-    # Leaves a 1.6mm solid rear wall (Y = -4.0 to -2.4) and 2.0mm perimeter walls
+    # 3. Carve expanded internal battery bay (11.0 mm clear internal depth: Y = -5.0 to +6.0 mm!)
+    # Leaves a 1.6mm solid rear wall (Y = -6.6 to -5.0) and 2.0mm perimeter walls
     xi0, xi1 = 2.0, 84.0
-    yi_floor = -BATTERY_EXTRA_DEPTH + 1.6  # -2.4 mm
+    yi_floor = -BATTERY_EXTRA_DEPTH + 1.6  # -5.0 mm (11.0 mm clear depth to Y=+6.0 mm!)
     yi_open = 6.2
     zi_top_0, zi_top_1 = 4.2, 6.6
     zi_bot_1, zi_bot_0 = 25.2 + height_expansion, 28.4 + height_expansion

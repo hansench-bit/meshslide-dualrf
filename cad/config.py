@@ -54,13 +54,13 @@ STRETCH_SPLIT_Z_L1 = 22.00     # Since Z_L1 = Z_M1 - 2.0
 # Shifted left to X=68.50 mm (away from the X=88.5..96.5 right M2 screw leg) and raised to Z=-8.50 mm
 # with an unobstructed Ø24.60 mm bottom-entry pocket (Z=-5.70 down through bottom) so the Ø23.0 mm
 # rear flange + red O-ring pushes straight up from the bottom and seats above the 18mm case walls!
-N_TYPE_X = 68.50               # Center X on CaseS1 top rail (shifted 13mm left to clear right M2 leg)
+N_TYPE_X = 73.50               # Center X on CaseS1 top rail (shifted into open right-side RF bay)
 N_TYPE_Y = 9.00                # Centered in Y (18.0 / 2)
 N_TYPE_HOLE_DIA = 16.30        # 16.0mm nominal + 0.3mm FDM tolerance
 N_TYPE_D_FLAT = 15.15          # Anti-rotation flat width (15.0mm nominal + 0.15mm clearance)
 N_TYPE_BOSS_OD = 28.60         # Reinforced top turret outer diameter (2.0mm wall around Ø24.6mm flange pocket)
 N_TYPE_NUT_CLEAR_DIA = 24.60   # Unobstructed bottom-loading pocket for Ø23.0mm silver flange + red O-ring
-N_TYPE_DECK_Z_TOP = -8.50      # Raised turret deck 8.5mm above Z=0 so rear flange sits at Z=-5.7..-1.1mm
+N_TYPE_DECK_Z_TOP = -10.00     # Raised turret deck 10.0mm above Z=0 so straight coax ferrule clears PCB
 N_TYPE_FLANGE_THICK = 2.80     # Bulkhead top wall thickness (leaves ~12.9mm of protruding 5/8"-24 thread)
 
 # 1b. Bolt-On 4-Hole Square Flange N-Type Female Mount (25x25mm / UG-58A/U flange, 18.30mm grid, M3 captive nuts)
@@ -72,7 +72,7 @@ N_TYPE_BOLT_HOLE_DIA = 3.40    # 4x Ø3.40 mm M3 clearance holes
 N_TYPE_BOLT_NUT_AF = 5.75      # Captive M3 hex nut socket width across flats (5.50 mm nut + 0.25 mm clearance)
 
 # 2. SMA Female Bulkhead for GPS (1/4"-36 UNS thread, 6.5mm hole with D-flat + 8mm hex trap)
-SMA_X = 48.50                  # Shifted left to X=48.50 mm (20.0mm center-to-center from N-Type)
+SMA_X = 54.00                  # Shifted right to X=54.00 mm (clear of Wio PCB right edge at X=50.28 mm)
 SMA_Y = 9.00                   # Centered in Y
 SMA_HOLE_DIA = 6.55            # 6.35mm nominal + FDM clearance
 SMA_D_FLAT = 6.05              # Anti-rotation D-flat width
@@ -83,7 +83,7 @@ SMA_FLANGE_THICK = 2.80        # Top wall thickness for SMA thread engagement
 # ---------------------------------------------------------------------------
 # Battery & Rokland Inline Power Switch Specifications (CaseL1_Deep & CaseM1)
 # ---------------------------------------------------------------------------
-BATTERY_EXTRA_DEPTH = 4.00     # +4.0mm outward expansion on CaseL1 (total 10.0mm cover depth)
+BATTERY_EXTRA_DEPTH = 6.60     # +6.6mm outward expansion on CaseL1 (11.0mm clear internal battery depth for 10mm packs)
 BATTERY_MAX_DIMS = (82.0, 34.0, 10.0)  # Fits 103450 / 103665 2000-3000mAh LiPo pouches
 
 # Rokland PID 920452 (RAK Wireless 2-Pin JST-PH 2.0 Battery Cable with Power Switch)

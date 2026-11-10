@@ -33,46 +33,35 @@ from cad.parts.tray_rak19007 import _prepare_stretched_m1_blank, _prepare_stretc
 def build_case_m1_wio_l1() -> trimesh.Trimesh:
     blank = _prepare_stretched_m1_blank(height_expansion=WIO_HEIGHT_EXPANSION)
 
-    # 1. Outer PCB perimeter cradle (48.50 x 52.40 mm, X = 2.00..50.50, Z_M1 = 6.80..59.20, Y_M1 = 2.40..5.50)
-    # The PCB rests at Y_M1 = 2.40 mm exclusively on the 4 corner M2 mounting pads (X = 2.0..7.3 & 45.2..50.5,
-    # Z_M1 = 6.8..12.1 & 53.9..59.2), putting the PCB top at Y_M1 = 4.00 mm (Y_U1 = -1.20 mm, 8.00 mm below
-    # the Y_U1 = 6.80 mm exterior front face, matching Wio-Tracker-L1-OLED.3mf!).
-    # All four edges between the corner pads are cut completely through the backplane (Y_M1 = -0.5..5.5):
-    #   - Center & Top/Bottom window (X = 7.30..45.20, Z_M1 = 6.80..59.20): clears top '100' inductor, GPS IPEX,
-    #     LoRa shield, and bottom-left BAT JST socket.
-    #   - Left Solder-Pin Through-Slot (X = 1.80..8.50, Z_M1 = 12.10..53.90): removes the inner bezel ledge
-    #     behind the RST button, ON/OFF slide switch, and USB-C soldered through-hole pins.
-    #   - Right Buzzer Through-Window (X = 40.00..52.50, Z_M1 = 12.10..53.90): removes the inner bezel ledge
-    #     behind the rear SMD magnetic BUZZER (Z_M1 = 36.0..47.0 mm) and RF coax transition.
+    # Reinforce the top-right frame bridge around Boss #1 (X = 47.78, Z_M1 = 9.50) before carving
+    top_right_boss_bridge = box_from_bounds(39.00, 53.50, 0.00, 2.40, 2.20, 13.00)
+    blank = trimesh.boolean.union([blank, top_right_boss_bridge], engine="manifold")
+
     x0 = WIO_PCB_X0
     x1 = x0 + WIO_PCB_L
     z0 = WIO_PCB_Z0
     z1 = z0 + WIO_PCB_W
 
     wio_outer_cradle = box_from_bounds(x0, x1, 2.40, 5.50, z0, z1)
-    wio_center_window = box_from_bounds(7.30, 45.20, -0.50, 5.50, z0, z1)
-    left_solder_pin_window = box_from_bounds(1.80, 8.50, -0.50, 5.50, 12.10, 53.90)
-    right_buzzer_window = box_from_bounds(40.00, 52.50, -0.50, 5.50, 12.10, 53.90)
+    # Leave larger 8.0 x 8.0 mm solid corner webs around all 4 M2 bosses (especially top-right Boss #1)
+    wio_center_window = box_from_bounds(8.00, 44.50, -0.50, 5.50, z0, z1)
+    left_solder_pin_window = box_from_bounds(1.80, 8.50, -0.50, 5.50, 12.80, 53.20)
 
-    # 2. Lower Grove I2C Plug & Wire Bend Bay (Z_M1 = 59.00..69.50 mm, 10.50 mm vertical clearance below PCB!)
-    # The white 4-pin Grove socket on the bottom edge of the Wio PCB sits at X = 33.45..46.61, Z_M1 = 49.68..59.14.
-    # When the mating white Grove plug is inserted, its housing + 4-wire bend extends 9-10 mm below Z_M1 = 59.00.
-    grove_plug_entry = box_from_bounds(31.20, 47.00, 0.80, 5.50, 49.00, 69.50)
-    grove_plug_through = box_from_bounds(31.80, 46.50, -0.50, 5.50, 50.00, 65.50)
-    grove_wire_bay = box_from_bounds(15.00, 89.00, 1.00, 5.50, 59.20, 69.50)
+    # 2. Full Bottom Battery Plug (#2) + Grove I2C Plug & Wire Bend Bay (X = 7.50..46.80, Z_M1 = 49.00..69.50)
+    # Cuts completely through the backplane (Y_M1 = -0.50..5.50) across both the bottom-left BAT JST socket (#2)
+    # and the bottom-right Grove I2C socket so the battery plug and Grove plug both have full clearance!
+    bottom_plugs_through = box_from_bounds(7.50, 46.80, -0.50, 5.50, 49.00, 69.50)
+    grove_wire_bay = box_from_bounds(7.50, 89.00, 0.80, 5.50, 59.20, 69.50)
 
-    # 3. Right-Side RF Coax & Expansion Bay (X = 52.2..89.0, Z_M1 = 14.5..69.5, Y = 1.2..5.5)
-    # and top coax drop chute (X = 49.5..78.5, Z_M1 = 0.0..16.0)
-    rf_bay = box_from_bounds(52.20, 89.00, 1.20, 5.50, 14.50, 69.50)
-    rf_top_chute = box_from_bounds(50.50, 78.50, 1.20, 5.50, 0.00, 16.00)
-    rf_bridge = box_from_bounds(48.00, 53.50, 2.40, 5.50, 12.10, 53.90)
+    # 3. Right-Side Antenna Cord & Connector Passage (#3: X = 44.50..88.00, Z_M1 = 12.80..68.00)
+    # Cuts completely through the right side of the PCB (X = 44.50..85.00, Z_M1 = 12.80..53.20, Y_M1 = -0.50..5.50)
+    # and opens the top coax drop chute (X = 52.00..85.00, Z_M1 = 0.00..16.00) so the antenna cord passes freely!
+    right_coax_through = box_from_bounds(44.50, 85.00, -0.50, 5.50, 12.80, 53.20)
+    rf_bay = box_from_bounds(51.50, 89.00, 0.80, 5.50, 12.80, 69.50)
+    rf_top_chute = box_from_bounds(52.00, 85.00, 0.80, 5.50, -0.50, 16.00)
+    rf_top_slot_through = box_from_bounds(53.00, 82.00, -0.50, 5.50, 2.00, 16.00)
 
-    # 4. Left-Side Official Port Cutouts on X = -0.5..5.5 (bridging into the left solder-pin window):
-    # Aligned to PCB bottom at Y_M1 = 2.40 mm:
-    # - Top-left RST button slot: ZC - 15.90 = 17.10 mm (Z_M1 = 14.20..20.00)
-    # - Middle-left ON/OFF Power slide switch slot: ZC - 6.00 = 27.00 mm (Z_M1 = 23.00..31.00)
-    # - Lower-left USB Type-C port opening: ZC + 7.80 = 40.80 mm (Z_M1 = 35.60..46.00)
-    #   + outer USB-C cable overmold counterbore (X = -0.5..1.3, Y = 1.5..5.5, Z_M1 = 34.60..47.00)
+    # 4. Left-Side Official Port Cutouts on X = -0.5..5.5:
     rst_slot = box_from_bounds(-0.50, 5.50, 2.10, 5.50, 14.20, 20.00)
     pwr_sw_slot = box_from_bounds(-0.50, 5.50, 2.10, 5.50, 23.00, 31.00)
     usbc_slot = box_from_bounds(-0.50, 5.50, 1.90, 5.50, 35.60, 46.00)
@@ -86,29 +75,38 @@ def build_case_m1_wio_l1() -> trimesh.Trimesh:
             wio_outer_cradle,
             wio_center_window,
             left_solder_pin_window,
-            right_buzzer_window,
-            grove_plug_entry,
-            grove_plug_through,
+            bottom_plugs_through,
             grove_wire_bay,
+            right_coax_through,
             rf_bay,
             rf_top_chute,
-            rf_bridge,
+            rf_top_slot_through,
             left_io_slot,
         ],
         engine="manifold",
     )
     carved = trimesh.boolean.difference([blank, cutouts], engine="manifold")
 
-    # 5. Add 4x corner M2 mounting bosses flush with the Y_M1 = 2.40 mm PCB support plane (43.06 x 47.00 mm grid)
+    # 5. Add reinforced 4x corner M2 mounting bosses (radius = 3.10 mm + corner gusset blocks) flush with Y_M1 = 2.40 mm
     xc = x0 + WIO_PCB_L / 2.0  # 26.25 mm
     zc = z0 + WIO_PCB_W / 2.0  # 33.00 mm
-    standoffs = []
+    standoffs = [
+        # Extra solid gusset around top-right Boss #1 (hx=47.78, hz=9.50) anchoring it to the top/right frame
+        box_from_bounds(43.80, 52.00, 0.00, 2.40, 4.00, 12.80),
+        # Extra solid gusset around top-left Boss (hx=4.72, hz=9.50)
+        box_from_bounds(2.00, 8.20, 0.00, 2.40, 5.50, 12.80),
+        # Extra solid gusset around bottom-left Boss (hx=4.72, hz=56.50)
+        box_from_bounds(2.00, 8.00, 0.00, 2.40, 53.20, 59.50),
+        # Extra solid gusset around bottom-right Boss (hx=47.78, hz=56.50), clear of Grove plug at X<=46.8, Z>=59.0
+        box_from_bounds(46.85, 51.50, 0.00, 2.40, 53.20, 59.00),
+    ]
     holes = []
     for sx in [-1.0, 1.0]:
         for sz in [-1.0, 1.0]:
             hx = xc + sx * (WIO_HOLE_DX / 2.0)
             hz = zc + sz * (WIO_HOLE_DZ / 2.0)
-            standoffs.append(cylinder_y(hx, hz, 0.00, 2.40, radius=2.35, sections=36))
+            boss_r = 3.30 if (sx > 0 and sz < 0) else 2.45
+            standoffs.append(cylinder_y(hx, hz, 0.00, 2.40, radius=boss_r, sections=36))
             holes.append(cylinder_y(hx, hz, -0.50, 2.90, radius=0.90, sections=36))
 
     with_bosses = trimesh.boolean.union([carved] + standoffs, engine="manifold")
@@ -121,36 +119,32 @@ def build_case_u1_wio_l1() -> trimesh.Trimesh:
     blank = _prepare_stretched_u1_blank(height_expansion=WIO_HEIGHT_EXPANSION)
 
     # 1. Internal clearance cavity behind the front bezel (Y_U1 = -0.20..4.80 mm):
-    # Clears the 1.3" OLED module, 24P E-Ink FPC connector, Menu button flex-frame (19.8 x 17.0 x 3.7 mm,
-    # spanning X_U1 = 31.44..51.24, Z_U1 = 30.77..47.77), Joystick conical skirt (Ø9.6 x 4.8 mm),
-    # bottom Solar JST-2P, and bottom Grove I2C 4P + wire bend bay!
-    stack_clearance = box_from_bounds(6.20, 84.00, -0.20, 3.80, 4.80, 67.50)
-    upper_and_bezel_recess = box_from_bounds(6.80, 52.00, -0.20, 4.80, 4.80, 48.50)
-    bottom_connectors_recess = box_from_bounds(6.20, 49.00, -0.20, 4.80, 44.50, 67.50)
-    grove_wire_bay_u1 = box_from_bounds(15.00, 84.00, -0.20, 4.60, 56.50, 67.50)
+    # Thins the left outer wall all the way back to X = 2.00 mm (matching the MakerWorld reference's 2.03 mm
+    # left wall and eliminating the old 6.80/6.20 mm inner step and Z=44.5 mm notch) so the Wio Tracker L1
+    # board (X = 2.22..50.28 mm) sits 100% flush against the faceplate!
+    stack_clearance = box_from_bounds(2.00, 84.00, -0.20, 3.80, 4.80, 67.50)
+    upper_oled_recess = box_from_bounds(2.00, 52.00, -0.20, 4.80, 4.80, 30.00)
+    left_mid_recess = box_from_bounds(2.00, 30.50, -0.20, 4.80, 30.00, 48.50)
+    bottom_connectors_recess = box_from_bounds(2.00, 52.00, -0.20, 4.80, 46.20, 67.50)
+    grove_wire_bay_u1 = box_from_bounds(7.50, 84.00, -0.20, 4.60, 56.50, 67.50)
 
     # 2. Left-Wall Matching Cutouts in CaseU1_WioL1 aligned with CaseM1_WioL1 (since Z_U1 = Z_M1 - 2.0):
-    # - Top-left RST button slot (Z_U1 = 12.20..18.00, Y_U1 = -0.5..2.50)
-    # - Middle Power slide switch slot (Z_U1 = 21.00..29.00, Y_U1 = -0.5..2.70)
-    # - Lower-left USB-C port opening (Z_U1 = 33.60..44.00, Y_U1 = -0.5..3.30)
-    #   + outer USB-C cable overmold counterbore (X = -0.5..1.3, Y_U1 = -0.5..4.00, Z_U1 = 32.60..45.00)
     u1_rst_slot = box_from_bounds(-0.50, 3.40, -0.50, 2.50, 12.20, 18.00)
     u1_pwr_slot = box_from_bounds(-0.50, 3.40, -0.50, 2.70, 21.00, 29.00)
     u1_usbc_slot = box_from_bounds(-0.50, 4.40, -0.50, 3.30, 33.60, 44.00)
     u1_usbc_overmold = box_from_bounds(-0.50, 1.30, -0.50, 4.00, 32.60, 45.00)
 
-    # 3. Graft the exact MakerWorld Wio-Tracker-L1-OLED.3mf Front Bezel Patch (Wio_MW_Bezel_Patch.stl)
-    # directly into CaseU1_WioL1 across X_U1 in [9.00, 51.00], Z_U1 in [5.00, 48.00]!
-    # This grafts 100% of the proven MakerWorld front bezel:
-    #   - Rounded-corner beveled 1.3" OLED window + 0.80 mm stepped glass retention lip
-    #   - Beveled stadium/pill Menu button opening + underside half-round alignment peg & right guide tabs
-    #   - Beveled conical 4-way Joystick opening (Ø8.00 -> Ø11.00 mm)
-    patch_window_cut = box_from_bounds(9.00, 51.00, 3.50, 7.20, 5.00, 48.00)
+    # 3. Graft the complete MakerWorld Wio-Tracker-L1-OLED.3mf Front Bezel + Full-Depth Menu Button Snap
+    # Retention Hooks (Y_U1 = 3.00..6.80 mm), Half-Round Alignment Peg (Y_U1 = 2.00..6.80 mm), and Right
+    # Button Guide Wall (X_U1 = 51.24..53.20 mm, Y_U1 = 1.40..6.80 mm)!
+    patch_window_cut = box_from_bounds(9.00, 53.00, 3.50, 7.20, 5.00, 48.00)
+    patch_btn_bay_cut = box_from_bounds(30.50, 53.20, -0.20, 7.20, 30.00, 46.20)
 
     cutouts = trimesh.boolean.union(
         [
             stack_clearance,
-            upper_and_bezel_recess,
+            upper_oled_recess,
+            left_mid_recess,
             bottom_connectors_recess,
             grove_wire_bay_u1,
             u1_rst_slot,
@@ -158,29 +152,38 @@ def build_case_u1_wio_l1() -> trimesh.Trimesh:
             u1_usbc_slot,
             u1_usbc_overmold,
             patch_window_cut,
+            patch_btn_bay_cut,
         ],
         engine="manifold",
     )
     carved_u1 = trimesh.boolean.difference([blank, cutouts], engine="manifold")
 
     mw_patch = trimesh.load(os.path.join(REF_STL_DIR, "Wio_MW_Bezel_Patch.stl"))
-    patch_clip = box_from_bounds(8.80, 51.20, 3.50, 6.80, 4.80, 48.20)
-    mw_patch_trimmed = trimesh.boolean.intersection([mw_patch, patch_clip], engine="manifold")
-
-    res = trimesh.boolean.union([carved_u1, mw_patch_trimmed], engine="manifold")
+    res = trimesh.boolean.union([carved_u1, mw_patch], engine="manifold")
     res.merge_vertices()
     return res
 
 
 def build_case_joystick_wio_l1() -> trimesh.Trimesh:
     """
-    Load the exact Joystick Cap from MakerWorld Wio-Tracker-L1-OLED.3mf (9.60 x 9.59 x 4.80 mm),
-    oriented flat on Z=0 for support-free printing.
+    Load the Joystick Cap from MakerWorld Wio-Tracker-L1-OLED.3mf (9.60 x 9.59 x 4.80 mm)
+    and tighten the underside square stem hole by a hair (from 2.10 x 2.10 mm down to 1.92 x 1.92 mm,
+    i.e. +0.09 mm inward per wall) so it grips the Wio 5-way joystick post snugly without wobble.
     """
     cap = trimesh.load(os.path.join(REF_STL_DIR, "Wio_MW_Joystick_Cap.stl"))
     bmin = cap.bounds[0]
     cap.apply_translation([-bmin[0], -bmin[1], -bmin[2]])
-    return cap
+
+    cx, cy = 4.8000, 4.7930
+    # Fill the original 2.10 x 2.10 mm square socket (Z = 0.00..2.40 mm) and re-cut at 1.92 x 1.92 mm
+    fill_old_sq = box_from_bounds(cx - 1.20, cx + 1.20, cy - 1.20, cy + 1.20, 0.00, 2.40)
+    half_sq = 1.92 / 2.0  # 0.96 mm (tightened by 0.09 mm per side from 1.05 mm)
+    new_sq_hole = box_from_bounds(cx - half_sq, cx + half_sq, cy - half_sq, cy + half_sq, -0.20, 2.45)
+
+    solid_cap = trimesh.boolean.union([cap, fill_old_sq], engine="manifold")
+    tight_cap = trimesh.boolean.difference([solid_cap, new_sq_hole], engine="manifold")
+    tight_cap.merge_vertices()
+    return tight_cap
 
 
 def build_case_button_wio_l1() -> trimesh.Trimesh:
