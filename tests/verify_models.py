@@ -81,11 +81,9 @@ def run_verification() -> None:
         meshes[name] = m
         print(f"  [PASS] {v_subdir}/{v_name:26s}: watertight=True, dims=({dims[0]:.2f}, {dims[1]:.2f}, {dims[2]:.2f}) mm")
 
-    print(f"\n=== 2. Checking 3MF Archive Bundles ({MODEL_VERSION}) ===")
+    print(f"\n=== 2. Checking Single Unified 3MF Bundle ({MODEL_VERSION}) ===")
     for bundle in [
-        f"MeshSlide_WioTrackerL1_Kit_{MODEL_VERSION}.3mf",
-        f"MeshSlide_RAK19007_Kit_{MODEL_VERSION}.3mf",
-        f"CardKB_Pro_Hybrid_Kit_{MODEL_VERSION}.3mf",
+        f"Wio_Tracker_L1_Complete_{MODEL_VERSION}.3mf",
     ]:
         bpath = os.path.join(OUT_3MF_DIR, bundle)
         assert os.path.isfile(bpath) and os.path.getsize(bpath) > 5000, f"Missing or empty 3MF: {bpath}"

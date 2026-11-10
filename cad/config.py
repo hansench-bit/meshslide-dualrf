@@ -54,7 +54,7 @@ STRETCH_SPLIT_Z_L1 = 22.00     # Since Z_L1 = Z_M1 - 2.0
 # Shifted left to X=68.50 mm (away from the X=88.5..96.5 right M2 screw leg) and raised to Z=-8.50 mm
 # with an unobstructed Ø24.60 mm bottom-entry pocket (Z=-5.70 down through bottom) so the Ø23.0 mm
 # rear flange + red O-ring pushes straight up from the bottom and seats above the 18mm case walls!
-N_TYPE_X = 73.50               # Center X on CaseS1 top rail (shifted into open right-side RF bay)
+N_TYPE_X = 77.00               # Center X on CaseS1 top rail (shifted well into open right-side RF bay)
 N_TYPE_Y = 9.00                # Centered in Y (18.0 / 2)
 N_TYPE_HOLE_DIA = 16.30        # 16.0mm nominal + 0.3mm FDM tolerance
 N_TYPE_D_FLAT = 15.15          # Anti-rotation flat width (15.0mm nominal + 0.15mm clearance)
@@ -72,7 +72,7 @@ N_TYPE_BOLT_HOLE_DIA = 3.40    # 4x Ø3.40 mm M3 clearance holes
 N_TYPE_BOLT_NUT_AF = 5.75      # Captive M3 hex nut socket width across flats (5.50 mm nut + 0.25 mm clearance)
 
 # 2. SMA Female Bulkhead for GPS (1/4"-36 UNS thread, 6.5mm hole with D-flat + 8mm hex trap)
-SMA_X = 54.00                  # Shifted right to X=54.00 mm (clear of Wio PCB right edge at X=50.28 mm)
+SMA_X = 57.50                  # Shifted right to X=57.50 mm (completely clear of Wio PCB X<=50.28 and Boss #1 X<=52.0)
 SMA_Y = 9.00                   # Centered in Y
 SMA_HOLE_DIA = 6.55            # 6.35mm nominal + FDM clearance
 SMA_D_FLAT = 6.05              # Anti-rotation D-flat width

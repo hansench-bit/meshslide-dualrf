@@ -62,17 +62,17 @@ def _build_flush_deck_base(z_top: float = -10.00) -> trimesh.Trimesh:
     fill_sma_block = box_from_bounds(86.5, 96.5, 2.5, 15.5, -2.50, 13.0)
     fill_mid_bridge = box_from_bounds(46.0, 88.0, 4.0, 14.0, -2.50, 1.80)
 
-    # Flush 18.0 mm wide flat deck spanning X = 46.0..96.50, Y = 0.0..18.0, Z = z_top..+1.80
+    # Flush 18.0 mm wide flat deck spanning X = 49.5..96.50, Y = 0.0..18.0, Z = z_top..+1.80
     # Extending straight to X = 96.50 mm eliminates the right-end step/undercut when printing vertically!
-    top_deck = box_from_bounds(46.0, 96.5, 0.0, 18.0, z_top, 1.80)
+    top_deck = box_from_bounds(49.5, 96.5, 0.0, 18.0, z_top, 1.80)
 
     left_ramp_verts = np.array([
-        [46.0, 0.0, z_top],
-        [46.0, 18.0, z_top],
+        [49.5, 0.0, z_top],
+        [49.5, 18.0, z_top],
         [SMA_X, 0.0, z_top],
         [SMA_X, 18.0, z_top],
-        [36.5, 0.0, 0.0],
-        [36.5, 18.0, 0.0],
+        [40.0, 0.0, 0.0],
+        [40.0, 18.0, 0.0],
         [SMA_X, 0.0, 0.0],
         [SMA_X, 18.0, 0.0],
     ], dtype=float)
@@ -98,13 +98,13 @@ def _build_flush_deck_base(z_top: float = -10.00) -> trimesh.Trimesh:
 def _build_45deg_bottom_channel(z_ceiling: float = -2.20) -> trimesh.Trimesh:
     """
     Build the internal bottom coax/connector insertion channel (X = 46.5..86.5, Y = 4.0..14.0)
-    with a 45-degree sloped roof at X = 86.5 -> 80.0 mm so when CaseS1 is printed standing vertically
+    with a 45-degree sloped roof at X = 86.5 -> 83.0 mm so when CaseS1 is printed standing vertically
     on X = 96.50 mm, the internal channel transition prints support-free with zero bridging!
     """
     verts = np.array([
         [46.5, 4.0, z_ceiling], [46.5, 14.0, z_ceiling],
-        [80.0, 4.0, z_ceiling], [80.0, 14.0, z_ceiling],
-        [86.5, 4.0, z_ceiling + 6.5], [86.5, 14.0, z_ceiling + 6.5],
+        [83.0, 4.0, z_ceiling], [83.0, 14.0, z_ceiling],
+        [86.5, 4.0, z_ceiling + 3.5], [86.5, 14.0, z_ceiling + 3.5],
         [46.5, 4.0, 14.0], [46.5, 14.0, 14.0],
         [86.5, 4.0, 14.0], [86.5, 14.0, 14.0],
     ], dtype=float)
@@ -173,13 +173,15 @@ def build_case_s1_dual_rf_bolton() -> trimesh.Trimesh:
     z_edge_bot = -6.00
 
     corner_R_pillars = []
-    for sx in [-1.0, 1.0]:
+    for bx in [N_TYPE_X - half_grid, 96.50 - r_corner]:
         for sy in [-1.0, 1.0]:
-            bx = N_TYPE_X + sx * half_grid
             by = N_TYPE_Y + sy * half_grid
             corner_R_pillars.append(cylinder_z(bx, by, z_top, z_edge_bot, radius=r_corner, sections=48))
+    # Extend the full 26.8 mm wide flange straight down to the X = 96.50 mm end face so there is zero undercut at the build plate!
+    end_flange_block = box_from_bounds(96.50 - r_corner, 96.50, N_TYPE_Y - half_grid - r_corner, N_TYPE_Y + half_grid + r_corner, z_top, z_edge_bot)
+    corner_R_pillars.append(end_flange_block)
 
-    # Inner rail anchor prism blending smoothly into the 18.0 mm rail body (X = 52.0..96.5 mm, Y = 0.0..18.0 mm)
+    # Inner rail anchor prism blending smoothly into the 18.0 mm rail body (X = SMA_X..96.5 mm, Y = 0.0..18.0 mm)
     rail_anchor_verts = np.array([
         [SMA_X, 0.0, z_top], [SMA_X, 18.0, z_top],
         [96.5, 0.0, z_top], [96.5, 18.0, z_top],
@@ -248,11 +250,12 @@ def build_case_s1_dual_rf_heatset() -> trimesh.Trimesh:
     z_edge_bot = -6.00
 
     corner_R_pillars = []
-    for sx in [-1.0, 1.0]:
+    for bx in [N_TYPE_X - half_grid, 96.50 - r_corner]:
         for sy in [-1.0, 1.0]:
-            bx = N_TYPE_X + sx * half_grid
             by = N_TYPE_Y + sy * half_grid
             corner_R_pillars.append(cylinder_z(bx, by, z_top, z_edge_bot, radius=r_corner, sections=48))
+    end_flange_block = box_from_bounds(96.50 - r_corner, 96.50, N_TYPE_Y - half_grid - r_corner, N_TYPE_Y + half_grid + r_corner, z_top, z_edge_bot)
+    corner_R_pillars.append(end_flange_block)
 
     rail_anchor_verts = np.array([
         [SMA_X, 0.0, z_top], [SMA_X, 18.0, z_top],

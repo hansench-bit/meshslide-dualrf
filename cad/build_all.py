@@ -475,24 +475,14 @@ def main() -> None:
             out_p = os.path.join(base_dir, kb_dir, f"{vname}.{ext}")
             parts[p].export(out_p) if ext == "stl" else export_step_ap214(parts[p], out_p, part_name=vname)
 
-    print(f"Exporting 3MF print plates ({MODEL_VERSION})...")
-    export_3mf_bundle(
-        {f"{k}_{MODEL_VERSION}": parts[k] for k in rak_parts},
-        os.path.join(OUT_3MF_DIR, f"MeshSlide_RAK19007_Kit_{MODEL_VERSION}.3mf"),
-    )
+    print(f"Exporting single unified 3MF print plate ({MODEL_VERSION})...")
+    single_3mf_path = os.path.join(OUT_3MF_DIR, f"Wio_Tracker_L1_Complete_{MODEL_VERSION}.3mf")
     export_3mf_bundle(
         {f"{k}_{MODEL_VERSION}": parts[k] for k in wio_parts},
-        os.path.join(OUT_3MF_DIR, f"MeshSlide_WioTrackerL1_Kit_{MODEL_VERSION}.3mf"),
+        single_3mf_path,
     )
-    top_parts = ["CaseS1_DualRF", "CaseS1_DualRF_BoltOn", "CaseS1_DualRF_Heatset"]
-    export_3mf_bundle(
-        {f"{k}_{MODEL_VERSION}": parts[k] for k in top_parts},
-        os.path.join(OUT_3MF_DIR, f"Wio_Tracker_L1_All_Tops_{MODEL_VERSION}.3mf"),
-    )
-    export_3mf_bundle(
-        {f"{k}_{MODEL_VERSION}": parts[k] for k in cardkb_pro_parts},
-        os.path.join(OUT_3MF_DIR, f"CardKB_Pro_Hybrid_Kit_{MODEL_VERSION}.3mf"),
-    )
+    import shutil
+    shutil.copy2(single_3mf_path, os.path.join(os.path.dirname(OUT_3MF_DIR), f"Wio_Tracker_L1_Complete_{MODEL_VERSION}.3mf"))
 
     print("Generating OpenSCAD Customizer project...")
     generate_openscad_customizer()
